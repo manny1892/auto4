@@ -44,7 +44,7 @@ public class CardDeliveryTest {
         $("[data-test-id='city'] input").setValue("Пенза");
         $x("//span[@class='input__icon']").click();
         $("[data-step='1']").click();
-        $("[data-day='1659474000000']").click();
+        $("td:nth-child(3)").click();
         $x("//input[@name='name']").setValue("Поросенок Петр");
         $x("//input[@name='phone']").setValue("+79099876545");
         $("[data-test-id='agreement']").click();
