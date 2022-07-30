@@ -58,7 +58,7 @@ public class CardDeliveryTest {
 
     // SECOND
     @Test
-    void shouldSendFormWithChoiceCity() {
+    void shouldSendFormWithChoiceCityAndDate() {
 
         $("[data-test-id='city'] input").setValue("Пе");
         $$x("//span[@class='menu-item__control']").get(1).click();
