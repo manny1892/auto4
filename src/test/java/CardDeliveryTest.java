@@ -3,37 +3,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Objects;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 
 public class CardDeliveryTest {
 
+
     public String generateDate(int days) {
         return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
-
-    Calendar calendar = Calendar.getInstance();
-    List<String> months = Arrays.asList("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь");
-
-    public String setCalendar() {
-        calendar.add(Calendar.DAY_OF_MONTH, 7);
-        return months.get(calendar.get(Calendar.MONTH));
-    }
-
-    public String setDate() {
-        return Integer.toString(calendar.get(Calendar.DATE));
-    }
-
-    public String getValidDate() {
-        return new SimpleDateFormat("dd.MM.yyyy").format(calendar.getTime());
-    }
-
 
     @BeforeEach
     void openBrowser() {
@@ -48,7 +31,7 @@ public class CardDeliveryTest {
         $("[data-test-id='city'] input").setValue("Пенза");
         $x("//input[@placeholder='Дата встречи']").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         $x("//input[@placeholder='Дата встречи']").setValue(planningDate);
-        $x("//input[@name='name']").setValue("Поросенок Петр");
+        $x("//input[@name='name']").setValue("Поросенок Фон-Петр");
         $x("//input[@name='phone']").setValue("+79099876545");
         $("[data-test-id='agreement']").click();
         $x("//span[@class='button__text']").click();
@@ -60,21 +43,26 @@ public class CardDeliveryTest {
     @Test
     void shouldSendFormWithChoiceCityAndDate() {
 
+        String validDate = generateDate(7);
+        String calendarDate = String.valueOf(LocalDate.now().plusDays(7).getDayOfMonth());
+        String planningDate = String.valueOf(LocalDate.now().plusDays(7).getMonth());
+        String deliveryDate = String.valueOf(LocalDate.now().plusDays(3).getMonth());
+
         $("[data-test-id='city'] input").setValue("Пе");
         $$x("//span[@class='menu-item__control']").get(1).click();
         $x("//span[@class='input__icon']").click();
 
-        while (!$("[class='calendar__name']").getText().contains(setCalendar())) {
+        if (!Objects.equals(planningDate, deliveryDate)) {
             $("[data-step='1']").click();
         }
 
-        $$("table.calendar__layout td").find(text(setDate())).click();
-        $x("//input[@name='name']").setValue("Поросенок Петр");
+        $$("table.calendar__layout td").find(text(calendarDate)).click();
+        $x("//input[@name='name']").setValue("Поросенок Фон-Петр");
         $x("//input[@name='phone']").setValue("+79099876545");
         $("[data-test-id='agreement']").click();
         $x("//span[@class='button__text']").click();
         $x("//*[contains(text(),'Успешно!')]").shouldBe(visible, Duration.ofSeconds(15));
-        $(".notification__content").shouldHave(Condition.text("Встреча успешно забронирована на " + getValidDate()), Duration.ofSeconds(15)).shouldBe(Condition.visible);
+        $(".notification__content").shouldHave(Condition.text("Встреча успешно забронирована на " + validDate), Duration.ofSeconds(15)).shouldBe(Condition.visible);
     }
 
 }
